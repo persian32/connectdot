@@ -322,8 +322,6 @@
         <textarea id="f3view" placeholder="내 분야에선 못 봤던, 친구 분야의 시각."></textarea>
       </div>
       <button type="button" class="btn-add" id="addFriend" onclick="addFriend()">+ 친구 한 명 더 (4인 모둠)</button>
-      <label for="seed">우리 모둠에서 찾은 융합 씨앗 <span class="hint">— 서로 이어질 것 같은 지점</span></label>
-      <textarea id="seed" placeholder="서로 다른 분야가 만날 수 있을 것 같은 지점을 한 줄로."></textarea>
     </div>
   </section>
 
@@ -335,6 +333,10 @@
     <div class="mm-status" id="mmStatus">모둠 정보를 불러오는 중…</div>
     <div class="mm-ring" id="mmRing"></div>
     <div id="mmList"></div>
+    <div class="card" style="margin-top:18px;">
+      <label for="seed">융합 씨앗 <span class="hint">— 우리가 이은 연결 중 하나를 더 키운다면?</span></label>
+      <textarea id="seed" class="tall" placeholder="마인드맵에서 찾은 연결 하나를 골라, 그걸 더 키우면 어떤 아이디어·활동·미래 모습이 될지 내 생각을 적어요. (개인 작성 — 친구와 달라도 됩니다)"></textarea>
+    </div>
     <div class="mm-foot">
       <button type="button" class="btn-ghost2" id="leaveBtn" onclick="leaveGroup()">모둠 바꾸기</button>
     </div>
@@ -630,8 +632,8 @@
     if(joinBook()) parts.push('『'+val('bookTitle')+'』'+(val('bookAuthor')?'('+val('bookAuthor')+')':'')+'을(를) 읽고');
     if(val('answer')) parts.push(val('answer'));
     var mv=mergeViews(); if(mv) parts.push('모둠 나눔에서 '+mv+' 등의 관점을 접함.');
+    var fusion=myFusionSummary(); if(fusion) parts.push('마인드맵 융합 연결 — '+fusion);
     if(val('seed')) parts.push('융합 씨앗: '+val('seed'));
-    if(val('cLink')) parts.push(val('cLink'));
     var refl=[val('r1'),val('r2'),val('r3')].filter(Boolean);
     if(refl.length) parts.push('성찰 — '+refl.join(' '));
     document.getElementById('assembled').value = parts.join(' ');
@@ -670,16 +672,26 @@
     }).catch(function(e){ console.warn(e); status.textContent='모둠 정보를 불러오지 못했습니다.'; });
   }
 
+  function mmShort(t){ t=(t||'').trim(); return t.length>5 ? t.slice(0,5)+'…' : t; }
   function mmRenderRing(){
     var N=mmMembers.length, R=100, cx=150, cy=150;
     var pos=mmMembers.map(function(m,i){ var a=(-90 + i*360/N)*Math.PI/180; return {x:cx+R*Math.cos(a), y:cy+R*Math.sin(a)}; });
     var svg='<svg viewBox="0 0 300 300" role="img"><title>모둠 융합 마인드맵</title>';
+    var pills='';
     for(var i=0;i<N;i++){ for(var j=i+1;j<N;j++){
       var pid=pairIdOf(mmMembers[i].number, mmMembers[j].number);
       var filled = mmLinks[pid] && (mmLinks[pid].text||"").trim();
-      if(filled) svg+='<line x1="'+pos[i].x+'" y1="'+pos[i].y+'" x2="'+pos[j].x+'" y2="'+pos[j].y+'" stroke="#33463F" stroke-width="2.4" stroke-linecap="round"/>';
-      else svg+='<line x1="'+pos[i].x+'" y1="'+pos[i].y+'" x2="'+pos[j].x+'" y2="'+pos[j].y+'" stroke="#DED9CB" stroke-width="1.4" stroke-dasharray="3 4"/>';
+      if(filled){
+        svg+='<line x1="'+pos[i].x+'" y1="'+pos[i].y+'" x2="'+pos[j].x+'" y2="'+pos[j].y+'" stroke="#33463F" stroke-width="2.4" stroke-linecap="round"/>';
+        var mx=pos[i].x+(pos[j].x-pos[i].x)*0.42, my=pos[i].y+(pos[j].y-pos[i].y)*0.42;
+        var label=mmShort(mmLinks[pid].text), w=label.length*10+12;
+        pills+='<rect x="'+(mx-w/2)+'" y="'+(my-9)+'" width="'+w+'" height="18" rx="9" fill="#FCFBF7" stroke="#33463F" stroke-width="0.8"/>';
+        pills+='<text x="'+mx+'" y="'+(my+4)+'" text-anchor="middle" font-family="IBM Plex Sans KR,sans-serif" font-size="10" fill="#33463F">'+escHtml(label)+'</text>';
+      } else {
+        svg+='<line x1="'+pos[i].x+'" y1="'+pos[i].y+'" x2="'+pos[j].x+'" y2="'+pos[j].y+'" stroke="#DED9CB" stroke-width="1.4" stroke-dasharray="3 4"/>';
+      }
     }}
+    svg+=pills;
     for(var k=0;k<N;k++){
       var c=MMC[k%4], x=pos[k].x, y=pos[k].y;
       var nm=mmMembers[k].name, cr=mmMembers[k].career||'미입력';
