@@ -147,7 +147,6 @@
 
   function assembleText(rec){
     const d = rec.data || {};
-    if(v(d,'assembledEdited')) return v(d,'assembledEdited');
     const parts=[];
     const big = d.bigq || "";
     if(v(d,'career')||v(d,'subq')) parts.push('[진로 '+(v(d,'career')||'—')+'] '+(v(d,'subq')||big));
