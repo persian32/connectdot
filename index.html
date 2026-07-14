@@ -181,6 +181,12 @@
   .mm-save{flex:1; font-family:var(--sans); font-weight:600; font-size:14px; color:#F7F6F0; background:var(--pine); border:1px solid var(--pine); border-radius:8px; padding:9px 0; cursor:pointer;}
   .mm-save:hover{background:var(--pine-deep);}
   .mm-cancel{font-family:var(--sans); font-weight:600; font-size:14px; color:var(--pine); background:transparent; border:1px solid var(--line-strong); border-radius:8px; padding:9px 14px; cursor:pointer;}
+  .np-preview{background:#fff; border:1px solid var(--line-strong); border-radius:10px; padding:16px 17px;
+    margin-top:10px; font-family:var(--serif); font-size:14.5px; line-height:1.8; color:var(--ink); white-space:pre-wrap;}
+  .np-preview .np-empty{color:#B4AF9E;}
+  .cnt{float:right; font-weight:400; font-size:12px; color:var(--ink-soft);}
+  .cnt.over{color:#B4462F; font-weight:600;}
+
   .mm-foot{margin-top:20px; text-align:center;}
   .mm-foot .btn-ghost2{display:inline-block; padding:9px 18px;}
 
@@ -342,6 +348,42 @@
     </div>
   </section>
 
+  <!-- 5차시 신문 원고 -->
+  <section class="screen" id="s45">
+    <p class="eyebrow">5차시 · 모둠 신문</p>
+    <h2>우리 모둠 신문 원고</h2>
+    <p class="lead">B4 한 장짜리 신문에 들어갈 글을 씁니다. 공동 지면은 모둠이 함께(실시간), 개인 지면은 각자 자기 몫을 씁니다. 다 쓰면 아래에서 원고를 복사해 캔바·미리캔버스 등에서 꾸며 주세요.</p>
+    <div class="mm-status" id="npStatus">모둠 정보를 불러오는 중…</div>
+
+    <div class="card">
+      <p class="subhead">공동 지면 <span class="hint">— 모둠이 함께 씁니다 (실시간)</span></p>
+      <label for="npHead">1면 헤드라인 <span class="hint">— 우리 모둠을 관통하는 한 문장</span> <span class="cnt" id="cntNpHead"></span></label>
+      <input type="text" id="npHead" maxlength="40" placeholder="예: 서로 다른 네 개의 길, 한 사람의 하루에서 만나다">
+      <label for="npSub">부제 <span class="cnt" id="cntNpSub"></span></label>
+      <input type="text" id="npSub" maxlength="70" placeholder="헤드라인을 보충하는 한 줄">
+      <label for="npFusion">융합 코너 <span class="hint">— 서로 다른 분야가 만나는 지점</span> <span class="cnt" id="cntNpFusion"></span></label>
+      <textarea id="npFusion" maxlength="250" placeholder="마인드맵에서 찾은 연결들을 모아, 우리 모둠이 발견한 융합 지점을 기사처럼 정리해요."></textarea>
+      <p class="hint2" id="npSaveNote">입력하면 모둠원 화면에 함께 반영됩니다.</p>
+    </div>
+
+    <div class="card">
+      <p class="subhead">내 지면 <span class="hint">— 내가 쓰는 내 몫 (신문에 내 이름으로 실립니다)</span></p>
+      <label for="npColumn">개인 칼럼 <span class="hint">— 내 진로 책이 이 질문에 답하는 법</span> <span class="cnt" id="cntNpColumn"></span></label>
+      <textarea id="npColumn" class="tall" maxlength="300" placeholder="내 진로의 눈으로 본 답을 기사처럼 써요. 앞 차시에 쓴 내용을 압축해서 정리하면 됩니다."></textarea>
+      <label for="npReview">한 줄 서평 <span class="hint">— 내가 읽은 진로 책 추천</span> <span class="cnt" id="cntNpReview"></span></label>
+      <input type="text" id="npReview" maxlength="60" placeholder="예: 아픔이 길이 되려면 — 질병을 개인이 아닌 사회로 보게 하는 책.">
+    </div>
+
+    <div class="card">
+      <div class="finalhead">
+        <span class="tag">모둠 원고</span>
+        <button type="button" class="btn-add" onclick="npCopy()">원고 복사</button>
+      </div>
+      <p class="hint2">모둠원 전체의 글이 신문 지면 순서대로 모입니다. 복사해서 캔바·미리캔버스 등에 붙여 넣고 꾸미세요.</p>
+      <div class="np-preview" id="npPreview">불러오는 중…</div>
+    </div>
+  </section>
+
   <!-- 6차시 성찰 -->
   <section class="screen" id="s5">
     <p class="eyebrow">6차시 · 성찰</p>
@@ -376,7 +418,8 @@
       <button type="button" class="btn-jump" onclick="goTo(2)">2차시</button>
       <button type="button" class="btn-jump" onclick="goTo(3)">3차시</button>
       <button type="button" class="btn-jump" onclick="goTo(4)">4차시</button>
-      <button type="button" class="btn-jump" onclick="goTo(5)">성찰</button>
+      <button type="button" class="btn-jump" onclick="goTo(5)">신문</button>
+      <button type="button" class="btn-jump" onclick="goTo(6)">성찰</button>
     </div>
     <div class="note"><span class="knot"></span><span>교사 화면에서는 이 내용이 <b>'이름 / 글내용(통합)' 엑셀 한 줄</b>이 되고, 창체 스킬이 생기부 문체로 다듬습니다. 위 글은 학생이 쓴 그대로이며, 다듬기 전 원본입니다.</span></div>
     <small class="foot">시제품 미리보기 — 실제 버전은 여기서 저장·제출됩니다</small>
@@ -392,14 +435,15 @@
 </div>
 
 <script>
-  var stages = ["s0","s1","s2","s3","s4","s5","s6"];
-  var threadLabels = ["1","2","3","4","성찰"];
+  var stages = ["s0","s1","s2","s3","s4","s45","s5","s6"];
+  var threadLabels = ["1","2","3","4","신문","성찰"];
+  var S_ENTRY=0, S_MM=4, S_NEWS=5, S_REFLECT=6, S_FINAL=7;
   var cur = 0;
 
   // ── 저장 대상 필드 ──
   var FIELD_IDS = ["career","subq","bookTitle","bookAuthor","answer","quote",
     "f1name","f1field","f1view","f2name","f2field","f2view","f3name","f3field","f3view",
-    "seed","c1","c2","cLink","r1","r2","r3"];
+    "seed","c1","c2","cLink","r1","r2","r3","npColumn","npReview"];
   var student = {classCode:"", number:"", name:""};
   var roster = null;   // [{no, name}, ...] — 반 확인 시 로드
 
@@ -634,6 +678,8 @@
     var mv=mergeViews(); if(mv) parts.push('모둠 나눔에서 '+mv+' 등의 관점을 접함.');
     var fusion=myFusionSummary(); if(fusion) parts.push('마인드맵 융합 연결 — '+fusion);
     if(val('seed')) parts.push('융합 씨앗: '+val('seed'));
+    if(val('npColumn')) parts.push('모둠 신문 개인 칼럼 — '+val('npColumn'));
+    if(val('npReview')) parts.push('한 줄 서평: '+val('npReview'));
     var refl=[val('r1'),val('r2'),val('r3')].filter(Boolean);
     if(refl.length) parts.push('성찰 — '+refl.join(' '));
     document.getElementById('assembled').value = parts.join(' ');
@@ -775,23 +821,114 @@
     }
   }
 
+  // ── 5차시 모둠 신문 ──
+  var npUnsubs=null, npPaper={}, npMembersData={}, npApplying=false, npTimer=null;
+  var NP_LIMITS={npHead:40, npSub:70, npFusion:250, npColumn:300, npReview:60};
+
+  function npCount(id){
+    var el=document.getElementById(id), c=document.getElementById('cnt'+id.charAt(0).toUpperCase()+id.slice(1));
+    if(!el||!c) return;
+    var n=(el.value||'').length, lim=NP_LIMITS[id];
+    c.textContent=n+' / '+lim;
+    c.className='cnt'+(n>=lim?' over':'');
+  }
+  function npCountAll(){ Object.keys(NP_LIMITS).forEach(npCount); }
+
+  function npEnter(){
+    var st=document.getElementById('npStatus');
+    if(!student.group){ st.textContent='모둠 정보가 없습니다. 처음 화면부터 다시 시작해 주세요.'; return; }
+    if(!window.cloud || !window.cloud.ready){ st.textContent='연결 대기 중입니다…'; return; }
+    if(npUnsubs){ npUnsubs(); npUnsubs=null; }
+    st.innerHTML='모둠 <b>'+escHtml(student.group.name)+'</b> · 공동 지면은 함께, 내 지면은 각자';
+    npCountAll();
+    var unsubPaper = window.cloud.subscribePaper(student.classCode, student.group.key, function(p){
+      npPaper=p||{};
+      npApplying=true;
+      ['npHead','npSub','npFusion'].forEach(function(k){
+        var el=document.getElementById(k);
+        if(el && document.activeElement!==el && (npPaper[k]||'')!==el.value) el.value=npPaper[k]||'';
+      });
+      npApplying=false;
+      npCountAll(); npRenderPreview();
+    });
+    var unsubMembers = window.cloud.subscribeGroupResponses(student.classCode, student.group.key, function(map){
+      npMembersData=map||{}; npRenderPreview();
+    });
+    npUnsubs=function(){ try{unsubPaper();}catch(e){} try{unsubMembers();}catch(e){} };
+  }
+
+  function npPaperChanged(){
+    if(npApplying) return;
+    npCountAll();
+    clearTimeout(npTimer);
+    npTimer=setTimeout(function(){
+      if(!student.group || !window.cloud || !window.cloud.ready) return;
+      window.cloud.savePaper(student.classCode, student.group.key, {
+        npHead: val('npHead'), npSub: val('npSub'), npFusion: val('npFusion')
+      }).catch(function(e){ console.warn('paper save', e); });
+    }, 600);
+  }
+  ['npHead','npSub','npFusion'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.addEventListener('input', npPaperChanged);
+  });
+  ['npColumn','npReview'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.addEventListener('input', function(){ npCount(id); npRenderPreview(); });
+  });
+
+  function npRenderPreview(){
+    var box=document.getElementById('npPreview'); if(!box) return;
+    var head=(npPaper.npHead||val('npHead')||'').trim();
+    var sub=(npPaper.npSub||val('npSub')||'').trim();
+    var fusion=(npPaper.npFusion||val('npFusion')||'').trim();
+    var out=[];
+    out.push('【 1면 헤드라인 】\n'+(head||'(아직 비어 있음)')+(sub?'\n— '+sub:''));
+    out.push('\n【 융합 코너 】\n'+(fusion||'(아직 비어 있음)'));
+    var mems = mmMembers.length ? mmMembers : Object.keys(npMembersData).map(function(k){ return {number:k, name:(npMembersData[k]||{}).name||k}; });
+    var cols=[], revs=[];
+    mems.forEach(function(m){
+      var isMe = String(m.number)===String(student.number);
+      var d = isMe ? {npColumn:val('npColumn'), npReview:val('npReview'), career:val('career')}
+                   : ((npMembersData[String(m.number)]||{}).data||{});
+      var nm = m.name || (npMembersData[String(m.number)]||{}).name || '';
+      var career=(d.career||'').trim();
+      var col=(d.npColumn||'').trim();
+      var rev=(d.npReview||'').trim();
+      cols.push('· '+nm+(career?' ('+career+')':'')+'\n'+(col||'(아직 안 씀)'));
+      revs.push('· '+nm+': '+(rev||'(아직 안 씀)'));
+    });
+    out.push('\n【 개인 칼럼 】\n'+cols.join('\n\n'));
+    out.push('\n【 한 줄 서평 】\n'+revs.join('\n'));
+    box.textContent = out.join('\n');
+  }
+
+  function npCopy(){
+    var t=document.getElementById('npPreview').textContent||'';
+    if(navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ alert('원고를 복사했어요. 캔바·미리캔버스 등에 붙여 넣으세요.'); })
+      .catch(function(){ alert('복사에 실패했어요. 원고를 직접 선택해 복사해 주세요.'); });
+    else alert('이 브라우저에서는 자동 복사가 안 돼요. 원고를 직접 선택해 복사해 주세요.');
+  }
+
   function show(){
     stages.forEach(function(id,i){
       document.getElementById(id).classList.toggle('active', i===cur);
     });
-    if(cur===6) returnToFinal=false;
-    document.getElementById('nav').style.display = (cur===0) ? 'none' : 'block';
+    if(cur===S_FINAL) returnToFinal=false;
+    document.getElementById('nav').style.display = (cur===S_ENTRY) ? 'none' : 'block';
     document.getElementById('prevBtn').style.visibility = cur<=1 ? 'hidden':'visible';
     var next=document.getElementById('nextBtn');
     next.style.display='';
-    if(cur===6){ next.style.display='none'; }
+    if(cur===S_FINAL){ next.style.display='none'; }
     else if(returnToFinal) next.textContent='완료로 돌아가기';
-    else if(cur===5) next.textContent='활동 마치기';
+    else if(cur===S_REFLECT) next.textContent='활동 마치기';
     else next.textContent='다음';
-    if(cur===2||cur===5) renderRecall();
-    if(cur===4){ mmEnter(); }
+    if(cur===2||cur===S_REFLECT) renderRecall();
+    if(cur===S_MM){ mmEnter(); }
     else if(mmUnsub){ mmUnsub(); mmUnsub=null; }
-    if(cur===6) assemble();
+    if(cur===S_NEWS){ npEnter(); }
+    else if(npUnsubs){ npUnsubs(); npUnsubs=null; }
+    if(cur===S_FINAL) assemble();
     drawThread();
     window.scrollTo({top:0, behavior:'smooth'});
   }
@@ -803,11 +940,11 @@
   }
 
   function go(dir){
-    if(cur===0) return;   // 입장 화면 이동은 모둠 결성 버튼이 담당
-    if(returnToFinal && dir===1 && cur<6){   // 고치기 끝 → 곧장 완료 화면으로
+    if(cur===S_ENTRY) return;   // 입장 화면 이동은 모둠 결성 버튼이 담당
+    if(returnToFinal && dir===1 && cur<S_FINAL){   // 고치기 끝 → 곧장 완료 화면으로
       if(student.name) saveNow();
       returnToFinal=false;
-      cur=6; show();
+      cur=S_FINAL; show();
       return;
     }
     cur = Math.max(1, Math.min(stages.length-1, cur+dir));
@@ -915,6 +1052,24 @@
       async setFusion(classCode, number, cLinkText){
         await setDoc(doc(db, "responses", classCode+"__"+number),
           { data: { cLink: cLinkText } }, { merge:true });
+      },
+      subscribePaper(classCode, groupKey, cb){
+        const ref = doc(db, "groups", this.gidOf(classCode, groupKey), "paper", "main");
+        return onSnapshot(ref, snap=>{ cb(snap.exists()? snap.data() : {}); },
+          err=>{ console.warn("paper sub", err); });
+      },
+      async savePaper(classCode, groupKey, payload){
+        await setDoc(doc(db, "groups", this.gidOf(classCode, groupKey), "paper", "main"),
+          Object.assign({}, payload, { updatedAt: serverTimestamp() }), { merge:true });
+      },
+      subscribeGroupResponses(classCode, groupKey, cb){
+        const q2 = query(collection(db, "responses"),
+          where("classCode","==",classCode), where("groupKey","==",groupKey));
+        return onSnapshot(q2, snap=>{
+          const m={};
+          snap.forEach(dd=>{ const x=dd.data(); if(x && x.number!=null) m[String(x.number)]=x; });
+          cb(m);
+        }, err=>{ console.warn("group responses sub", err); });
       },
       async leaveGroup(classCode, groupKey, number){
         const ref = doc(db, "groups", this.gidOf(classCode, groupKey));
