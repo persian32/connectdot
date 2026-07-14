@@ -184,11 +184,13 @@
     let n=0;
     if(has('bigq','career','subq','bookTitle')) n++;
     if(has('answer','quote')) n++;
-    if(has('f1view','f2view','f3view','seed')) n++;
-    if(has('cLink','c1','c2')) n++;
+    if(has('f1view','f2view','f3view')) n++;
+    if(has('cLink','seed')) n++;
+    if(has('npColumn','npReview')) n++;
     if(has('r1','r2','r3')) n++;
     return n;
   }
+  const STAGE_TOTAL = 6;
 
   function assembleText(rec){
     const d = rec.data || {};
@@ -200,6 +202,8 @@
     const mv=[]; ['f1','f2','f3'].forEach(p=>{ if(v(d,p+'field')||v(d,p+'view')) mv.push((v(d,p+'field')||'친구')+': '+v(d,p+'view')); });
     if(mv.length) parts.push('모둠 나눔에서 '+mv.join(' / ')+' 등의 관점을 접함.');
     if(v(d,'seed')) parts.push('융합 씨앗: '+v(d,'seed'));
+    if(v(d,'npColumn')) parts.push('모둠 신문 개인 칼럼 — '+v(d,'npColumn'));
+    if(v(d,'npReview')) parts.push('한 줄 서평: '+v(d,'npReview'));
     if(v(d,'cLink')) parts.push(v(d,'cLink'));
     const refl=[v(d,'r1'),v(d,'r2'),v(d,'r3')].filter(Boolean);
     if(refl.length) parts.push('성찰 — '+refl.join(' '));
@@ -221,15 +225,15 @@
     if(!rows.length){ body.innerHTML = '<div style="padding:18px; color:#9C9683; font-size:13px;">명단도 저장 기록도 없습니다. 오른쪽 위 \'명단 관리\'로 명단을 먼저 등록하세요.</div>'; return; }
     body.innerHTML = rows.map(r=>{
       const n = r.rec ? stagesDone(r.rec.data) : 0;
-      const pct = Math.round(n/5*100);
+      const pct = Math.round(n/STAGE_TOTAL*100);
       const sel = r.key===selectedId ? ' sel' : '';
       const noTag = r.no!=='—' ? (r.no+'번 ') : '';
-      const meta = r.rec ? ((r.rec.groupName? '모둠 '+escapeHtml(r.rec.groupName)+' · ':'') + n+'/5 단계 · '+fmtTime(r.rec.updatedAt)) : '<span style="color:#B4462F">미입력</span>';
+      const meta = r.rec ? ((r.rec.groupName? '모둠 '+escapeHtml(r.rec.groupName)+' · ':'') + n+'/'+STAGE_TOTAL+' 단계 · '+fmtTime(r.rec.updatedAt)) : '<span style="color:#B4462F">미입력</span>';
       const orphan = r.orphan ? ' <span style="font-size:11px;color:#B4462F">(명단 외)</span>' : '';
       return '<div class="srow'+sel+'" data-key="'+escapeAttr(r.key)+'">'
         + '<div class="nm">'+escapeHtml(noTag+r.name)+orphan+'</div>'
         + '<div class="meta">'+meta+'</div>'
-        + '<div class="bar'+(n===5?' full':'')+'"><i style="width:'+pct+'%"></i></div>'
+        + '<div class="bar'+(n===STAGE_TOTAL?' full':'')+'"><i style="width:'+pct+'%"></i></div>'
         + '</div>';
     }).join('');
     body.querySelectorAll('.srow').forEach(el=>{
@@ -267,7 +271,7 @@
 
     el.innerHTML =
       '<div class="dname">'+escapeHtml(noTag+rec.name)+'</div>'
-      + '<div class="dsub">'+escapeHtml(rec.classCode||'')+(rec.groupName? ' · 모둠 '+escapeHtml(rec.groupName):'')+' · 마지막 저장 '+fmtTime(rec.updatedAt)+' · '+stagesDone(d)+'/5 단계</div>'
+      + '<div class="dsub">'+escapeHtml(rec.classCode||'')+(rec.groupName? ' · 모둠 '+escapeHtml(rec.groupName):'')+' · 마지막 저장 '+fmtTime(rec.updatedAt)+' · '+stagesDone(d)+'/'+STAGE_TOTAL+' 단계</div>'
 
       + '<div class="assembled-wrap">'
         + '<div class="lbl"><span>글내용(통합) — 창체 스킬로 넘길 원문</span>'
@@ -289,6 +293,9 @@
       + '<div class="sec"><h4>4차시 · 마인드맵 융합 연결</h4>'
         + fld('내가 이은 연결점', d.cLink)
         + fld('융합 씨앗(내 아이디어)', d.seed) + '</div>'
+
+      + '<div class="sec"><h4>5차시 · 모둠 신문</h4>'
+        + fld('개인 칼럼', d.npColumn) + fld('한 줄 서평', d.npReview) + '</div>'
 
       + '<div class="sec"><h4>6차시 · 성찰</h4>'
         + fld('① 나눔 전후 변화', d.r1) + fld('② 구체적 연결점', d.r2) + fld('③ 진로로의 회귀', d.r3) + '</div>';
