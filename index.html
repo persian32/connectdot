@@ -115,7 +115,15 @@
   textarea.assemble{width:100%; background:#fff; border:1px solid var(--line-strong); border-radius:10px;
     padding:16px 17px; margin-top:8px; font-family:var(--serif); font-size:15px; line-height:1.85;
     color:var(--ink); min-height:220px; resize:vertical;}
-  textarea.assemble:focus{border-color:var(--pine); box-shadow:0 0 0 3px rgba(51,70,63,.13); outline:none;}
+  textarea.assemble[readonly]{background:#FBFAF6; cursor:default;}
+  textarea.assemble:focus{outline:none;}
+
+  .jumprow{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:14px;}
+  .jumprow .jl{font-size:13px; color:var(--ink-soft); margin-right:2px;}
+  .btn-jump{font-family:var(--sans); font-size:13.5px; font-weight:600; color:var(--pine);
+    background:transparent; border:1px solid var(--line-strong); border-radius:8px;
+    padding:8px 13px; cursor:pointer; transition:border-color .15s, background .15s;}
+  .btn-jump:hover{border-color:var(--pine); background:#F1F3EF;}
   .tag{display:inline-block; font-family:var(--sans); font-size:11px; font-weight:600;
     color:var(--pine); background:#EAEEE9; border-radius:5px; padding:2px 9px;
     vertical-align:middle; letter-spacing:.03em;}
@@ -287,13 +295,20 @@
   <section class="screen" id="s6">
     <p class="eyebrow">완료</p>
     <h2>내 활동이 한 편의 기록으로 모였습니다</h2>
-    <p class="lead">따로 자기평가서를 다시 쓰지 않아도, 매 차시의 입력과 성찰이 아래처럼 한 편으로 모입니다. 마음에 안 드는 부분은 여기서 직접 고쳐도 되고, ‘이전’으로 돌아가 차시 입력을 바꿔도 됩니다.</p>
+    <p class="lead">따로 자기평가서를 다시 쓰지 않아도, 매 차시의 입력과 성찰이 아래처럼 한 편으로 모입니다. 고치고 싶은 부분이 있으면 아래 버튼으로 그 차시로 바로 가서 고치면 됩니다.</p>
     <div class="finalhead">
       <span class="tag" id="finalName">학생</span>
-      <button type="button" class="btn-add" onclick="assemble(true)">차시 입력으로 다시 만들기</button>
     </div>
-    <textarea class="assemble" id="assembled" placeholder="앞 차시를 채우면 이곳에 모입니다."></textarea>
-    <div class="note"><span class="knot"></span><span>교사 화면에서는 이 내용이 <b>'이름 / 글내용(통합)' 엑셀 한 줄</b>이 되고, 창체 스킬이 생기부 문체로 다듬습니다. 위 글은 학생이 쓴(또는 여기서 고친) 그대로이며, 다듬기 전 원본입니다.</span></div>
+    <textarea class="assemble" id="assembled" readonly placeholder="앞 차시를 채우면 이곳에 모입니다."></textarea>
+    <div class="jumprow">
+      <span class="jl">고칠 차시로 바로 가기</span>
+      <button type="button" class="btn-jump" onclick="goTo(1)">1차시</button>
+      <button type="button" class="btn-jump" onclick="goTo(2)">2차시</button>
+      <button type="button" class="btn-jump" onclick="goTo(3)">3차시</button>
+      <button type="button" class="btn-jump" onclick="goTo(4)">4차시</button>
+      <button type="button" class="btn-jump" onclick="goTo(5)">성찰</button>
+    </div>
+    <div class="note"><span class="knot"></span><span>교사 화면에서는 이 내용이 <b>'이름 / 글내용(통합)' 엑셀 한 줄</b>이 되고, 창체 스킬이 생기부 문체로 다듬습니다. 위 글은 학생이 쓴 그대로이며, 다듬기 전 원본입니다.</span></div>
     <small class="foot">시제품 미리보기 — 실제 버전은 여기서 저장·제출됩니다</small>
   </section>
 
@@ -328,7 +343,6 @@
     var d={};
     FIELD_IDS.forEach(function(id){ var e=document.getElementById(id); if(e) d[id]=e.value; });
     var r=document.querySelector('input[name=bigq]:checked'); d.bigq = r? r.value : "";
-    if(assembledDirty){ d.assembledEdited = document.getElementById('assembled').value; }
     return d;
   }
   function applyAll(d){
@@ -336,7 +350,6 @@
     FIELD_IDS.forEach(function(id){ if(d[id]!==undefined){ var e=document.getElementById(id); if(e) e.value=d[id]; } });
     if(d.bigq){ document.querySelectorAll('input[name=bigq]').forEach(function(rb){ if(rb.value===d.bigq) rb.checked=true; }); markChoices(); }
     if((d.f3name||d.f3field||d.f3view)){ document.getElementById('friend3').style.display='block'; document.getElementById('addFriend').style.display='none'; }
-    if(d.assembledEdited){ document.getElementById('assembled').value=d.assembledEdited; assembledDirty=true; }
   }
   function saveNow(){
     if(!student.name) return;
@@ -435,12 +448,8 @@
     document.getElementById('addFriend').style.display='none';
   }
 
-  var assembledDirty=false;
-  function assemble(force){
+  function assemble(){
     document.getElementById('finalName').textContent = displayName();
-    var box=document.getElementById('assembled');
-    if(!force && assembledDirty) return; // 학생이 직접 고친 내용은 지키기
-
     var big=""; var r=document.querySelector('input[name=bigq]:checked'); if(r) big=r.value;
     var parts=[];
     if(val('career')||val('subq')) parts.push('[진로 '+(val('career')||'—')+'] '+(val('subq')||big));
@@ -451,11 +460,8 @@
     if(val('cLink')) parts.push(val('cLink'));
     var refl=[val('r1'),val('r2'),val('r3')].filter(Boolean);
     if(refl.length) parts.push('성찰 — '+refl.join(' '));
-
-    box.value = parts.join(' ');
-    assembledDirty=false;
+    document.getElementById('assembled').value = parts.join(' ');
   }
-  document.getElementById('assembled').addEventListener('input', function(){ assembledDirty=true; });
 
   function markChoices(){
     document.querySelectorAll('.choice').forEach(function(c){
@@ -469,13 +475,15 @@
     stages.forEach(function(id,i){
       document.getElementById(id).classList.toggle('active', i===cur);
     });
+    if(cur===6) returnToFinal=false;
     document.getElementById('nav').style.display = 'block';
     document.getElementById('prevBtn').style.visibility = cur<=1 ? 'hidden':'visible';
     var next=document.getElementById('nextBtn');
     next.style.display='';
     if(cur===0) next.textContent='시작하기';
-    else if(cur===5) next.textContent='활동 마치기';
     else if(cur===6){ next.style.display='none'; }
+    else if(returnToFinal) next.textContent='완료로 돌아가기';
+    else if(cur===5) next.textContent='활동 마치기';
     else next.textContent='다음';
     if(cur===2||cur===5) renderRecall();
     if(cur===6) assemble();
@@ -483,9 +491,21 @@
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
+  var returnToFinal=false;
+  function goTo(i){   // 최종 화면에서 특정 차시로 바로 가서 고치기
+    returnToFinal=true;
+    cur=i; show();
+  }
+
   function go(dir){
     if(cur===0 && dir===1){
       if(!document.getElementById('name').value){ alert('명단에서 이름을 선택해 주세요.'); return; }
+    }
+    if(returnToFinal && dir===1 && cur<6){   // 고치기 끝 → 곧장 완료 화면으로
+      if(student.name) saveNow();
+      returnToFinal=false;
+      cur=6; show();
+      return;
     }
     var leavingEntry = (cur===0 && dir===1);
     cur = Math.max(0, Math.min(stages.length-1, cur+dir));
