@@ -1010,7 +1010,7 @@
   }
 
   // ── 완성 신문 이미지 제출 (Firestore에 압축 저장) ──
-  var NP_MAX_W=1400, NP_TARGET=560000;   // 약 560KB 이하
+  var NP_MAX_W=1200, NP_TARGET=420000;   // 약 420KB 이하 (Firestore 문서 1MB 한도에 여유)
 
   function npShrink(file){
     return new Promise(function(resolve, reject){
@@ -1067,9 +1067,12 @@
       st.textContent='제출 완료!'; st.className='up-state ok';
     }).catch(function(err){
       console.warn(err);
+      var code=(err && (err.code||err.message))||'';
       if(err && err.message==='too_big') st.textContent='이미지가 너무 큽니다. 조금 더 작게 내보내 다시 시도해 주세요.';
       else if(err && err.message==='bad_image') st.textContent='이미지를 읽지 못했어요. 다른 파일로 시도해 주세요.';
-      else st.textContent='제출에 실패했어요. 잠시 후 다시 시도해 주세요.';
+      else if(String(code).indexOf('permission-denied')>=0) st.textContent='권한 오류: 선생님께 알려 주세요. (보안 규칙 확인 필요)';
+      else if(String(code).indexOf('invalid-argument')>=0) st.textContent='이미지가 너무 큽니다. 더 작게 내보내 다시 시도해 주세요.';
+      else st.textContent='제출 실패: '+code;
       st.className='up-state err';
     }).finally(function(){ npFileEl.value=''; });
   });
