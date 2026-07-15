@@ -501,7 +501,7 @@
       <button type="button" class="btn-jump" onclick="goTo(5)">신문</button>
       <button type="button" class="btn-jump" onclick="goTo(6)">성찰</button>
     </div>
-    <div class="note"><span class="knot"></span><span>교사 화면에서는 이 내용이 <b>'이름 / 글내용(통합)' 엑셀 한 줄</b>이 되고, 창체 스킬이 생기부 문체로 다듬습니다. 위 글은 학생이 쓴 그대로이며, 다듬기 전 원본입니다.</span></div>
+    <div class="note"><span class="knot"></span><span><b>이 글이 선생님께 그대로 전달됩니다.</b> 고치고 싶은 부분이 있으면 위의 '고칠 차시로 바로 가기'로 그 차시에 가서 고치면 되고, 고친 내용은 여기에 자동으로 다시 모입니다. 지금까지 쓴 글은 <b id="finalBytes">약 0바이트</b>예요.</span></div>
     <small class="foot">시제품 미리보기 — 실제 버전은 여기서 저장·제출됩니다</small>
   </section>
 
@@ -749,6 +749,18 @@
     document.getElementById('addFriend').style.display='none';
   }
 
+  // 나이스 기준: 한글 3바이트, 줄바꿈 2바이트, 그 외 1바이트
+  function neisBytes(s){
+    var n=0;
+    for(var i=0;i<(s||'').length;i++){
+      var ch=s[i];
+      if(ch==='\n') n+=2;
+      else if(ch.charCodeAt(0)>127) n+=3;
+      else n+=1;
+    }
+    return n;
+  }
+
   function assemble(){
     document.getElementById('finalName').textContent = displayName();
     var big=""; var r=document.querySelector('input[name=bigq]:checked'); if(r) big=r.value;
@@ -761,7 +773,10 @@
     if(val('seed')) parts.push('융합 씨앗: '+val('seed'));
     var refl=[val('r1'),val('r2'),val('r3')].filter(Boolean);
     if(refl.length) parts.push('성찰 — '+refl.join(' '));
-    document.getElementById('assembled').value = parts.join(' ');
+    var text = parts.join(' ');
+    document.getElementById('assembled').value = text;
+    var fb=document.getElementById('finalBytes');
+    if(fb) fb.textContent = '약 '+neisBytes(text).toLocaleString()+'바이트';
   }
 
   function markChoices(){
