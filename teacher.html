@@ -172,10 +172,14 @@
     return rows;
   }
 
-  // 나이스 EUC-KR 근사 바이트: 한글 2, 그 외 1
+  // 나이스 기준: 한글 3바이트, 줄바꿈 2바이트, 그 외 1바이트
   function neisBytes(s){
     let n=0;
-    for(const ch of (s||"")){ n += /[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(ch) ? 2 : 1; }
+    for(const ch of (s||"")){
+      if(ch==='\n') n+=2;
+      else if(ch.charCodeAt(0)>127) n+=3;
+      else n+=1;
+    }
     return n;
   }
 
@@ -186,7 +190,7 @@
     if(has('answer','quote')) n++;
     if(has('f1view','f2view','f3view')) n++;
     if(has('cLink','seed')) n++;
-    if(has('npColumn','npReview')) n++;
+    if(has('npColumn')) n++;
     if(has('r1','r2','r3')) n++;
     return n;
   }
@@ -202,8 +206,6 @@
     const mv=[]; ['f1','f2','f3'].forEach(p=>{ if(v(d,p+'field')||v(d,p+'view')) mv.push((v(d,p+'field')||'친구')+': '+v(d,p+'view')); });
     if(mv.length) parts.push('모둠 나눔에서 '+mv.join(' / ')+' 등의 관점을 접함.');
     if(v(d,'seed')) parts.push('융합 씨앗: '+v(d,'seed'));
-    if(v(d,'npColumn')) parts.push('모둠 신문 개인 칼럼 — '+v(d,'npColumn'));
-    if(v(d,'npReview')) parts.push('한 줄 서평: '+v(d,'npReview'));
     if(v(d,'cLink')) parts.push(v(d,'cLink'));
     const refl=[v(d,'r1'),v(d,'r2'),v(d,'r3')].filter(Boolean);
     if(refl.length) parts.push('성찰 — '+refl.join(' '));
@@ -294,8 +296,8 @@
         + fld('내가 이은 연결점', d.cLink)
         + fld('융합 씨앗(내 아이디어)', d.seed) + '</div>'
 
-      + '<div class="sec"><h4>5차시 · 모둠 신문</h4>'
-        + fld('개인 칼럼', d.npColumn) + fld('한 줄 서평', d.npReview) + '</div>'
+      + '<div class="sec"><h4>5차시 · 모둠 신문 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#9C9683">(참고 — 생기부 원문에는 미포함)</span></h4>'
+        + fld('개인 칼럼', d.npColumn) + '</div>'
 
       + '<div class="sec"><h4>6차시 · 성찰</h4>'
         + fld('① 나눔 전후 변화', d.r1) + fld('② 구체적 연결점', d.r2) + fld('③ 진로로의 회귀', d.r3) + '</div>';
